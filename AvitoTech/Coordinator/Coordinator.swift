@@ -22,9 +22,8 @@ final class Coordinator: MainCoordinatorProtocol {
     func createMainVC() -> UIViewController {
         let view = MainViewController()
         let viewModel = MainViewModel()
-        let model = MainModel()
         
-        viewModel.model = model
+        view.viewModel = viewModel
         
         return view
     }
