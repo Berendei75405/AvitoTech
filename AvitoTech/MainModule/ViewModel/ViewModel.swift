@@ -10,7 +10,7 @@ import Combine
 
 //MARK: - TableState
 enum TableState {
-    case success, failure, initial
+    case success, failure(Error), initial
 }
 
 protocol MainViewModelProtocol: AnyObject {
@@ -30,8 +30,10 @@ final class MainViewModel: MainViewModelProtocol {
             switch result {
             case .success(let model):
                 self?.model = model
+                self?.updateTableState.send(.success)
             case .failure(let error):
                 print(error.localizedDescription)
+                self?.updateTableState.send(.failure(error))
             }
         }
     }

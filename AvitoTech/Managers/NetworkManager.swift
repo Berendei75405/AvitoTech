@@ -15,7 +15,7 @@ final class NetworkManager {
     
     //MARK: - fetchEmployees
     func fetchEmployees(completion: @escaping (Result<MainModel, Error>) -> Void) {
-        guard let url = URL(string: "https://run.mocky.io/v3/f2d9155a-f21d-4ac8-8114-3a83756af259") else { return }
+        guard let url = URL(string: "https://run.mocky.io/v3/d9f535a6-0c46-4eab-aff7-7d17b237a02d") else { return }
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
