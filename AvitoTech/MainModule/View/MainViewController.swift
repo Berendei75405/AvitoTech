@@ -43,7 +43,7 @@ final class MainViewController: UIViewController {
                 tableView.delegate = self
                 tableView.dataSource = self
             case .failure(let error):
-                print("Error: \(error.localizedDescription)")
+                print("Error: \(error)")
             }
         }
     }
