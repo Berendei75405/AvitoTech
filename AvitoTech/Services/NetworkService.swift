@@ -54,7 +54,7 @@ final class NetworkService {
                     completion(.failure(.errorWithDescription("Нет соединения с интернетом.")))
                 }
             } else {
-                completion(.failure(.errorWithDescription("Нет соединения с интернетом.")))
+                completion(.success(decodeDate!))
             }
         }.store(in: &cancellable)
     }

@@ -34,6 +34,9 @@ final class MainViewController: UIViewController {
         return table
     }()
     
+    //MARK: - refreshControl
+    private let refreshControl = UIRefreshControl()
+    
     //MARK: - tableState
     private var tableState: TableState = .initial {
         didSet {
@@ -45,7 +48,7 @@ final class MainViewController: UIViewController {
                                delay: 0,
                                options: .curveEaseInOut,
                                animations: {
-                    self.centerYConstraint.constant = 600
+                    self.centerYConstraint.constant = self.view.frame.height
                     self.view.layoutIfNeeded()
                 })
                 tableView.reloadData()
@@ -136,10 +139,14 @@ final class MainViewController: UIViewController {
                 .constraint(equalTo: view.bottomAnchor)
         ])
         
+        //refreshControl
+        refreshControl.addTarget(self, action: #selector(refreshTable), for: .valueChanged)
+        tableView.refreshControl = refreshControl
+        
         //errorView
         view.addSubview(errorView)
         centerYConstraint = errorView.centerYAnchor.constraint(
-            equalTo: view.centerYAnchor, constant: 0)
+            equalTo: view.centerYAnchor, constant: view.frame.height)
         NSLayoutConstraint.activate([
             errorView.centerXAnchor.constraint(
                 equalTo: view.centerXAnchor),
@@ -196,6 +203,12 @@ final class MainViewController: UIViewController {
             self.view.layoutIfNeeded()
         })
         viewModel?.fetchEmployees()
+    }
+    
+    //MARK: - refreshTable
+    @objc private func refreshTable() {
+        viewModel?.fetchEmployees()
+        refreshControl.endRefreshing()
     }
     
 }
