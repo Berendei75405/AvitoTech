@@ -48,13 +48,12 @@ final class MainViewController: UIViewController {
                                delay: 0,
                                options: .curveEaseInOut,
                                animations: {
-                    self.centerYConstraint.constant = self.view.frame.height
+                    self.centerYConstraint.constant = self.view.frame.height * 2
                     self.view.layoutIfNeeded()
                 })
-                tableView.reloadData()
                 tableView.delegate = self
                 tableView.dataSource = self
-                
+                tableView.reloadData()
             case .failure(let error):
                 UIView.animate(withDuration: 0.8,
                                delay: 0,
@@ -146,7 +145,7 @@ final class MainViewController: UIViewController {
         //errorView
         view.addSubview(errorView)
         centerYConstraint = errorView.centerYAnchor.constraint(
-            equalTo: view.centerYAnchor, constant: view.frame.height)
+            equalTo: view.centerYAnchor, constant: view.frame.height * 2)
         NSLayoutConstraint.activate([
             errorView.centerXAnchor.constraint(
                 equalTo: view.centerXAnchor),
@@ -199,7 +198,7 @@ final class MainViewController: UIViewController {
                        delay: 0,
                        options: .curveEaseInOut,
                        animations: {
-            self.centerYConstraint.constant = 600
+            self.centerYConstraint.constant = self.view.frame.height * 2
             self.view.layoutIfNeeded()
         })
         viewModel?.fetchEmployees()

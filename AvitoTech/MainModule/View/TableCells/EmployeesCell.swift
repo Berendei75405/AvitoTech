@@ -116,8 +116,12 @@ final class EmployeesCell: UITableViewCell {
                 skills: [String]) {
         nameInfoLabel.text = name
         phoneInfoLabel.text = phoneNumber
-      
+
+        //добавление умений
         for element in 0..<skills.count {
+            if element == 0 {
+                skillsInfoLabel.text = ""
+            }
             if element != skills.count - 1 {
                 //не может быть nil, так как есть дефолтное значение
                 skillsInfoLabel.text! += skills[element] + ", "
