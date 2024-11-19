@@ -30,10 +30,18 @@ final class MainViewModel: MainViewModelProtocol {
             switch result {
             case .success(let model):
                 self?.model = model
+                self?.sortEmployess()
                 self?.updateTableState.send(.success)
             case .failure(let error):
                 self?.updateTableState.send(.failure(error))
             }
+        }
+    }
+    
+    //MARK: - sortEmployess
+    private func sortEmployess() {
+        self.model?.company.employees.sort {
+            $0.name < $1.name
         }
     }
     

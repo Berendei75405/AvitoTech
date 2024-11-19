@@ -43,18 +43,18 @@ final class NetworkService {
                 
                 switch httpResponse.statusCode {
                 case 100..<199:
-                    completion(.failure(NetworkError.errorWithDescription("Информационная ошибка. Код ошибки: \(httpResponse.statusCode)")))
+                    completion(.failure(NetworkError.errorWithDescription("Информационная ошибка. Код ошибки: \(httpResponse.statusCode).")))
                 case 300..<399:
-                    completion(.failure(NetworkError.errorWithDescription("Ошибка перенаправления. Код ошибки: \(httpResponse.statusCode)")))
+                    completion(.failure(NetworkError.errorWithDescription("Ошибка перенаправления. Код ошибки: \(httpResponse.statusCode).")))
                 case 400..<499:
-                    completion(.failure(NetworkError.errorWithDescription("Ошибка клиента. Код ошибки: \(httpResponse.statusCode)")))
+                    completion(.failure(NetworkError.errorWithDescription("Ошибка клиента. Код ошибки: \(httpResponse.statusCode).")))
                 case 500..<599:
-                    completion(.failure(NetworkError.errorWithDescription("Ошибка сервера. Код ошибки: \(httpResponse.statusCode)")))
+                    completion(.failure(NetworkError.errorWithDescription("Ошибка сервера. Код ошибки: \(httpResponse.statusCode).")))
                 default:
-                    completion(.failure(.errorWithDescription("Нет соединения с интернетом")))
+                    completion(.failure(.errorWithDescription("Нет соединения с интернетом.")))
                 }
             } else {
-                completion(.failure(.errorWithDescription("Нет соединения с интернетом")))
+                completion(.success(decodeDate!))
             }
         }.store(in: &cancellable)
     }
