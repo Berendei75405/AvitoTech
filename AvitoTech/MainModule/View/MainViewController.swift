@@ -118,10 +118,15 @@ final class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "backgroundColor")
-        tableState = .initial
-        viewModel?.fetchEmployees()
-        updateState()
         setupUI()
+        tableState = .initial
+        updateState()
+    }
+    
+    //MARK: - viewDidAppear
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        viewModel?.fetchEmployees()
     }
     
     //MARK: - updateState
