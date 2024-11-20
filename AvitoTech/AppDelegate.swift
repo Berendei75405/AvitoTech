@@ -13,7 +13,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        //настройка URLCashe
+        let memoryCapacity = 10 * 1024 * 1024 //20 mb
+        let diskCapacity = 50 * 1024 * 1024 //100 mb
+        let cashe = URLCache(memoryCapacity: memoryCapacity, diskCapacity: diskCapacity)
+        URLCache.shared = cashe
+        
         return true
     }
 

@@ -23,39 +23,51 @@ final class NetworkService {
     
     //MARK: - makeRequest
     func makeRequest<T: Decodable>(request: URLRequest, completion: @escaping (Result<T, NetworkError>) -> Void) {
-        //издатель
-        let publisher = URLSession.shared.dataTaskPublisher(for: request)
-            .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
         
-        publisher.sink { result in
-            switch result {
-            case .finished:
-                print("finished!")
-            case .failure(let error):
-                completion(.failure(.error(error)))
-            }
-        } receiveValue: { data, response in
-            let decodeDate = try? JSONDecoder().decode(T.self, from: data)
+        //если есть кеш на запрос, то вернуть его, если нет то отправить запрос и записать кеш
+        if let cahsedResponse = URLCache.shared.cachedResponse(for: request) {
+            guard let decodeDate = try? JSONDecoder().decode(T.self, from: cahsedResponse.data) else { return }
+            print("Кеш есть!")
+            completion(.success(decodeDate))
+        } else {
+            //издатель
+            let publisher = URLSession.shared.dataTaskPublisher(for: request)
+                .receive(on: DispatchQueue.main)
+                .eraseToAnyPublisher()
             
-            if decodeDate == nil  {
-                guard let httpResponse = response as? HTTPURLResponse else { return }
-                
-                switch httpResponse.statusCode {
-                case 100..<199:
-                    completion(.failure(NetworkError.errorWithDescription("Информационная ошибка. Код ошибки: \(httpResponse.statusCode).")))
-                case 300..<399:
-                    completion(.failure(NetworkError.errorWithDescription("Ошибка перенаправления. Код ошибки: \(httpResponse.statusCode).")))
-                case 400..<499:
-                    completion(.failure(NetworkError.errorWithDescription("Ошибка клиента. Код ошибки: \(httpResponse.statusCode).")))
-                case 500..<599:
-                    completion(.failure(NetworkError.errorWithDescription("Ошибка сервера. Код ошибки: \(httpResponse.statusCode).")))
-                default:
-                    completion(.failure(.errorWithDescription("Нет соединения с интернетом.")))
+            publisher.sink { result in
+                switch result {
+                case .finished:
+                    print("finished!")
+                case .failure(let error):
+                    completion(.failure(.error(error)))
                 }
-            } else {
-                completion(.success(decodeDate!))
-            }
-        }.store(in: &cancellable)
+            } receiveValue: { data, response in
+                let decodeDate = try? JSONDecoder().decode(T.self, from: data)
+                
+                //кеширование ответа
+                let cashedResponse = CachedURLResponse(response: response, data: data)
+                URLCache.shared.storeCachedResponse(cashedResponse, for: request)
+                
+                if decodeDate == nil  {
+                    guard let httpResponse = response as? HTTPURLResponse else { return }
+                    
+                    switch httpResponse.statusCode {
+                    case 100..<199:
+                        completion(.failure(NetworkError.errorWithDescription("Информационная ошибка. Код ошибки: \(httpResponse.statusCode).")))
+                    case 300..<399:
+                        completion(.failure(NetworkError.errorWithDescription("Ошибка перенаправления. Код ошибки: \(httpResponse.statusCode).")))
+                    case 400..<499:
+                        completion(.failure(NetworkError.errorWithDescription("Ошибка клиента. Код ошибки: \(httpResponse.statusCode).")))
+                    case 500..<599:
+                        completion(.failure(NetworkError.errorWithDescription("Ошибка сервера. Код ошибки: \(httpResponse.statusCode).")))
+                    default:
+                        completion(.failure(.errorWithDescription("Нет соединения с интернетом.")))
+                    }
+                } else {
+                    completion(.success(decodeDate!))
+                }
+            }.store(in: &cancellable)
+        }
     }
 }
