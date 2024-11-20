@@ -14,16 +14,11 @@ final class MainViewController: UIViewController {
     
     private var centerYConstraint: NSLayoutConstraint!
     
-    //MARK: - deinit
-    deinit {
-        print("MainViewController")
-    }
-    
     //MARK: - tableView
     private var tableView: UITableView = {
         var table  = UITableView(frame: .zero, style: .plain)
         
-        table.backgroundColor = #colorLiteral(red: 0.9719608426, green: 0.9722560048, blue: 0.9813567996, alpha: 1)
+        table.backgroundColor = UIColor(named: "backgroundColor")
         table.translatesAutoresizingMaskIntoConstraints = false
         table.separatorStyle = .none
         table.showsVerticalScrollIndicator = false
@@ -37,13 +32,24 @@ final class MainViewController: UIViewController {
     //MARK: - refreshControl
     private let refreshControl = UIRefreshControl()
     
+    //MARK: - activityView
+    private var activityView: UIActivityIndicatorView = {
+        var progres = UIActivityIndicatorView(style: .large)
+        progres.translatesAutoresizingMaskIntoConstraints = false
+        progres.startAnimating()
+        progres.color = .black
+        
+        return progres
+    }()
+    
     //MARK: - tableState
     private var tableState: TableState = .initial {
         didSet {
             switch tableState {
             case .initial:
-                print("Таблица инициализированна")
+                activityView.isHidden = false
             case .success:
+                activityView.isHidden = true
                 UIView.animate(withDuration: 0.8,
                                delay: 0,
                                options: .curveEaseInOut,
@@ -55,6 +61,7 @@ final class MainViewController: UIViewController {
                 tableView.dataSource = self
                 tableView.reloadData()
             case .failure(let error):
+                activityView.isHidden = true
                 UIView.animate(withDuration: 0.8,
                                delay: 0,
                                options: .curveEaseInOut,
@@ -110,6 +117,8 @@ final class MainViewController: UIViewController {
     //MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = UIColor(named: "backgroundColor")
+        tableState = .initial
         viewModel?.fetchEmployees()
         updateState()
         setupUI()
@@ -119,7 +128,6 @@ final class MainViewController: UIViewController {
     private func updateState() {
         viewModel?.updateTableState.sink(receiveValue: { [unowned self] state in
             self.tableState = state
-            print(state)
         }).store(in: &cancellabele)
     }
     
@@ -190,10 +198,24 @@ final class MainViewController: UIViewController {
                 equalToConstant: 35)
         ])
         
+        //activityView
+        view.addSubview(activityView)
+        NSLayoutConstraint.activate([
+            activityView.centerXAnchor.constraint(
+                equalTo: view.centerXAnchor),
+            activityView.centerYAnchor.constraint(
+                equalTo: view.centerYAnchor),
+            activityView.heightAnchor.constraint(
+                equalToConstant: 100),
+            activityView.widthAnchor.constraint(
+                equalToConstant: 100)
+        ])
+        
     }
     
     //MARK: - closeButtonAction
     @objc private func closeButtonAction() {
+        self.activityView.isHidden = false
         UIView.animate(withDuration: 0.8,
                        delay: 0,
                        options: .curveEaseInOut,
